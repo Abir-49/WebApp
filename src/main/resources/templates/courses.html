@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Courses</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="container my-2">
+        <h2>Courses</h2>
+        <a sec:authorize="hasAnyRole('TEACHER', 'ADMIN')" th:href="@{/courses/new}" class="btn btn-primary mb-3">Add New Course</a>
+        <table class="table table-striped table-responsive-md">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Credits</th>
+                    <th>Department</th>
+                    <th sec:authorize="hasAnyRole('TEACHER', 'ADMIN')">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="course : ${courses}">
+                    <td th:text="${course.id}"></td>
+                    <td th:text="${course.name}"></td>
+                    <td th:text="${course.credits}"></td>
+                    <td th:text="${course.department.name}"></td>
+                    <td sec:authorize="hasAnyRole('TEACHER', 'ADMIN')">
+                        <a th:href="@{/courses/edit/{id}(id=${course.id})}" class="btn btn-primary btn-sm">Edit</a>
+                        <a th:href="@{/courses/delete/{id}(id=${course.id})}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

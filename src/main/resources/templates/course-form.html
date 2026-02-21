@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${course.id == null ? 'Create Course' : 'Edit Course'}"></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="container my-2" sec:authorize="hasAnyRole('TEACHER', 'ADMIN')">
+        <h2 th:text="${course.id == null ? 'Create New Course' : 'Edit Course'}"></h2>
+        <form th:action="${course.id == null ? '/courses' : '/courses/' + course.id}" th:object="${course}" method="post">
+            <div class="form-group" th:if="${course.id != null}">
+                <input type="hidden" th:field="*{id}" />
+            </div>
+            <div class="form-group">
+                <label for="name">Course Name</label>
+                <input type="text" th:field="*{name}" id="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="credits">Credits</label>
+                <input type="number" th:field="*{credits}" id="credits" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <select th:field="*{department.id}" id="department" class="form-control" required>
+                    <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"
+                            th:selected="${course.department != null and course.department.id == dept.id}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="/courses" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+    <div class="container my-2" sec:authorize="hasRole('STUDENT')">
+        <p>You do not have permission to modify course information.</p>
+    </div>
+</body>
+</html>

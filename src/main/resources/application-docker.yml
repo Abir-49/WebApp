@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres:5432/admindb
+    username: admin
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # Ensure tables are created/updated in PostgreSQL
+    show-sql: true # Show SQL queries in console (optional)

@@ -1,0 +1,1 @@
+The application is now running successfully in Docker. You can access it at http://localhost:8080.

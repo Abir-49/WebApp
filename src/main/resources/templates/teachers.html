@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Teachers</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="container my-2">
+        <h2>Teachers</h2>
+
+        <table class="table table-striped table-responsive-md">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Courses Taught</th>
+                    <th sec:authorize="hasAnyRole('TEACHER', 'ADMIN')">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="teacher : ${teachers}">
+                    <td th:text="${teacher.id}"></td>
+                    <td th:text="${teacher.firstName}"></td>
+                    <td th:text="${teacher.lastName}"></td>
+                    <td th:text="${teacher.email}"></td>
+                    <td th:text="${teacher.department.name}"></td>
+                    <td>
+                        <span th:each="course, iterStat : ${teacher.courses}">
+                            <span th:text="${course.name}"></span><span th:if="${!iterStat.last}">, </span>
+                        </span>
+                    </td>
+                    <td sec:authorize="hasAnyRole('TEACHER', 'ADMIN')">
+                        <a th:href="@{/teachers/edit/{id}(id=${teacher.id})}" class="btn btn-primary btn-sm">Edit</a>
+                        <a th:href="@{/teachers/delete/{id}(id=${teacher.id})}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

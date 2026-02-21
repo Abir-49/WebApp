@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New User</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div class="container my-2" sec:authorize="hasRole('ADMIN')">
+        <h2>Create New User</h2>
+        <form th:action="@{/users}" th:object="${userDTO}" method="post">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" th:field="*{username}" id="username" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" th:field="*{password}" id="password" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select th:field="*{roleId}" id="role" class="form-control" required>
+                    <option value="">Select Role</option>
+                    <option th:each="role : ${allRoles}"
+                            th:value="${role.id}"
+                            th:text="${role.name.substring('ROLE_'.length())}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- Student Specific Fields -->
+            <div id="studentFields" style="display:none;">
+                <h3>Student Details</h3>
+                <div class="form-group">
+                    <label for="studentName">Student Name</label>
+                    <input type="text" th:field="*{studentName}" id="studentName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="studentRoll">Roll Number</label>
+                    <input type="text" th:field="*{studentRoll}" id="studentRoll" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="studentCourseIds">Enrolled Courses</label>
+                    <select multiple th:field="*{studentCourseIds}" id="studentCourseIds" class="form-control">
+                        <option th:each="course : ${allCourses}"
+                                th:value="${course.id}"
+                                th:text="${course.name}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Teacher Specific Fields -->
+            <div id="teacherFields" style="display:none;">
+                <h3>Teacher Details</h3>
+                <div class="form-group">
+                    <label for="teacherFirstName">First Name</label>
+                    <input type="text" th:field="*{teacherFirstName}" id="teacherFirstName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="teacherLastName">Last Name</label>
+                    <input type="text" th:field="*{teacherLastName}" id="teacherLastName" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="teacherEmail">Email</label>
+                    <input type="email" th:field="*{teacherEmail}" id="teacherEmail" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="teacherDepartmentId">Department</label>
+                    <select th:field="*{teacherDepartmentId}" id="teacherDepartmentId" class="form-control">
+                        <option value="">Select Department</option>
+                        <option th:each="department : ${allDepartments}"
+                                th:value="${department.id}"
+                                th:text="${department.name}">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="teacherCourseIds">Assigned Courses</label>
+                    <select multiple th:field="*{teacherCourseIds}" id="teacherCourseIds" class="form-control">
+                        <option th:each="course : ${allCourses}"
+                                th:value="${course.id}"
+                                th:text="${course.name}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create User</button>
+            <a href="/users" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+    <div class="container my-2" sec:authorize="!hasRole('ADMIN')">
+        <p>You do not have permission to create users.</p>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function () {
+            const roleSelect = document.getElementById('role');
+            const studentFields = document.getElementById('studentFields');
+            const teacherFields = document.getElementById('teacherFields');
+
+            const allRoles = /*[[${allRoles}]]*/ [];
+
+            function toggleFields() {
+                const selectedRoleId = roleSelect.value;
+                const selectedRole = allRoles.find(role => role.id == selectedRoleId);
+
+                studentFields.style.display = 'none';
+                teacherFields.style.display = 'none';
+
+                if (selectedRole) {
+                    const roleName = selectedRole.name;
+                    if (roleName === 'ROLE_STUDENT') {
+                        studentFields.style.display = 'block';
+                    } else if (roleName === 'ROLE_TEACHER') {
+                        teacherFields.style.display = 'block';
+                    }
+                }
+            }
+
+            roleSelect.addEventListener('change', toggleFields);
+            toggleFields(); // Call on initial load
+        });
+        /*]]>*/
+    </script>
+</body>
+</html>
